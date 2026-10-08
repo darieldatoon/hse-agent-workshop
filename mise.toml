@@ -27,7 +27,7 @@ run = [
 ]
 
 [tasks.seed]
-description = "Seed traces and feedback into every attendee workspace (pass options after --)"
+description = "Seed chosen workspaces, or print the answer key (pass options after --)"
 run = "uv run --all-packages --env-file .env hse-seed"
 
 [tasks."infra:init"]
@@ -35,14 +35,26 @@ description = "Install the LangSmith Terraform provider"
 dir = "infra"
 run = "terraform init"
 
-[tasks."infra:plan"]
-description = "Plan workspaces, org invites and memberships"
+[tasks."workshop:plan"]
+description = "Dry run: the Terraform plan, then who would be invited"
 dir = "infra"
-# The provider reads the org admin key from LANGSMITH_API_KEY in ../.env.
-run = "set -a && . ../.env && set +a && terraform plan"
+# The provider reads the org admin key from LANGSMITH_API_KEY in ../.env; Terraform reads the
+# OpenAI key only under a TF_VAR_ name.
+run = [
+  "set -a && . ../.env && set +a && TF_VAR_openai_api_key=\"$OPENAI_API_KEY\" terraform plan",
+  "uv run --env-file ../.env python invite.py",
+]
 
-[tasks."infra:apply"]
-description = "Apply workspaces, org invites and memberships"
+[tasks."workshop:up"]
+description = "Workspaces, role, secrets and caps; invite everyone; seed new workspaces. Safe to re-run"
 dir = "infra"
-# The provider reads the org admin key from LANGSMITH_API_KEY in ../.env.
-run = "set -a && . ../.env && set +a && terraform apply"
+run = [
+  "set -a && . ../.env && set +a && TF_VAR_openai_api_key=\"$OPENAI_API_KEY\" terraform apply",
+  "uv run --env-file ../.env python invite.py --send",
+  "uv run --all-packages --env-file ../.env hse-seed upload --from-terraform . --skip-seeded",
+]
+
+[tasks."workshop:reseed"]
+description = "Fresh traces in every workspace, the morning of the lab. Wipes attendees' flags"
+dir = "infra"
+run = "uv run --all-packages --env-file ../.env hse-seed upload --from-terraform ."

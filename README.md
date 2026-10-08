@@ -45,26 +45,30 @@ Socket Firewall).
 
 ```bash
 mise trust && mise install && mise run setup
-cp .env.example .env    # an org admin key in LANGSMITH_API_KEY
+cp .env.example .env    # an org admin key in LANGSMITH_API_KEY, the OpenAI key in OPENAI_API_KEY
 ```
 
-**Workspaces** (`infra/`, Terraform with the
-[LangSmith provider](https://registry.terraform.io/providers/langchain-ai/langsmith)):
+**Set up the workshop** (`infra/` is Terraform with the
+[LangSmith provider](https://registry.terraform.io/providers/langchain-ai/langsmith); `seed/`
+replays a day of the v0 agent's traces):
 
 ```bash
 cp infra/attendees.example.csv infra/attendees.csv          # real attendees; gitignored
 cp infra/terraform.tfvars.example infra/terraform.tfvars    # gitignored
 mise run infra:init
-mise run infra:apply    # workspaces and org invites
-# once invites are accepted: set add_workspace_members = true, then apply again
+mise run workshop:plan      # dry run: what Terraform would change, who would be invited
+mise run workshop:up        # workspaces, role, OpenAI secrets, spend caps; invites; seeds new workspaces
+```
+
+`workshop:up` is safe to re-run, for example after adding a late attendee to the CSV. It skips
+anyone already invited and any workspace already seeded.
+
+The morning of the lab, refresh the traces so they fall within the last day. This wipes any
+flags attendees have made, so run it before they start:
+
+```bash
+mise run workshop:reseed
+mise run seed -- key        # the answer key, as a Markdown table
 ```
 
 Terraform state holds attendee emails. It stays local and gitignored.
-
-**Seeding** (`seed/`): replays a day of the v0 agent's traces into a workspace, with reporter
-feedback, the `flag` feedback key and the `hse-triage-review` dataset. Re-running replaces them.
-
-```bash
-mise run seed -- upload --workspace-id <id>    # repeat the flag for several; none means the key's own
-mise run seed -- key                           # the answer key, as a Markdown table
-```

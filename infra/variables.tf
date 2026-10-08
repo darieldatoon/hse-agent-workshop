@@ -1,5 +1,5 @@
 variable "attendees_csv" {
-  description = "CSV with first_name, last_name, email columns. Gitignored: it holds real people."
+  description = "CSV with an email column; other columns are ignored. Gitignored: it holds real people."
   type        = string
   default     = "attendees.csv"
 }
@@ -10,12 +10,13 @@ variable "spare_workspaces" {
   default     = 5
 }
 
-variable "add_workspace_members" {
-  description = <<-EOT
-    Add each attendee to their own workspace. LangSmith only allows this once the attendee has
-    accepted the org invite, so apply once with false, wait for invites to be accepted, then
-    apply again with true.
-  EOT
-  type        = bool
-  default     = false
+variable "openai_api_key" {
+  description = "OpenAI key stored in every workspace for the gateway. The infra tasks pass OPENAI_API_KEY from ../.env."
+  type        = string
+  sensitive   = true
+
+  validation {
+    condition     = length(trimspace(var.openai_api_key)) > 0
+    error_message = "Set OPENAI_API_KEY in .env; an empty key would be stored in every workspace."
+  }
 }

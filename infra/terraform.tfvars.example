@@ -1,3 +1,2 @@
 # Copy to terraform.tfvars (gitignored) and adjust.
-spare_workspaces      = 5
-add_workspace_members = false
+spare_workspaces = 5

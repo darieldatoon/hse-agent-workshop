@@ -6,7 +6,13 @@ output "workspaces" {
   )
 }
 
-output "invite_status" {
-  description = "Org invite status per attendee: pending until they accept."
-  value       = { for email, m in langsmith_org_membership.attendee : email => m.status }
+# Read by invite.py, which sends the org invites with each attendee's workspace attached.
+output "attendee_role_id" {
+  description = "Workspace role each attendee gets in their own workspace."
+  value       = langsmith_workspace_role.attendee.id
+}
+
+output "org_user_role_id" {
+  description = "Org role each attendee gets: enough to create a personal access token."
+  value       = data.langsmith_org_role.user.id
 }
