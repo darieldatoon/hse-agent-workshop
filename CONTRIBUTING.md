@@ -32,8 +32,9 @@ The setup cell exists once per notebook, wrapped in markers:
 Change one, change them all: `rg -l 'snippet:setup' notebooks/`. Keep the setup cell's pins
 in step with the `notebook` group in `pyproject.toml`.
 
-The v0 agent appears twice: split across cells in `01_build_agent`, and as one collapsed cell
-in `03_evaluate_and_fix`. Change one, change the other.
+The v0 agent appears three times: split across cells in `01_build_agent`, as one collapsed cell
+in `03_evaluate_and_fix`, and in `seed/src/hse_workshop_seed/agent.py`, which the seeded traces
+show. Change one, change them all.
 
 ## Hooks
 

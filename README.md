@@ -61,4 +61,10 @@ mise run infra:apply    # workspaces and org invites
 
 Terraform state holds attendee emails. It stays local and gitignored.
 
-**Seeding** (`seed/`): `mise run seed -- generate`, then `mise run seed -- upload`.
+**Seeding** (`seed/`): replays a day of the v0 agent's traces into a workspace, with reporter
+feedback, the `flag` feedback key and the `hse-triage-review` dataset. Re-running replaces them.
+
+```bash
+mise run seed -- upload --workspace-id <id>    # repeat the flag for several; none means the key's own
+mise run seed -- key                           # the answer key, as a Markdown table
+```

@@ -15,7 +15,7 @@ from the local, gitignored `.denylist`.
 | Path | What |
 |---|---|
 | `notebooks/` | The Colab notebooks. Follow the contract in `CONTRIBUTING.md` |
-| `seed/` | `hse-seed`: generates the v0 agent's traces once, then replays them into every workspace |
+| `seed/` | `hse-seed`: scripts v0 over 50 fixture reports and replays the traces into each workspace |
 | `infra/` | Terraform: one workspace per attendee, org invites, memberships |
 | `tools/` | Notebook lint, secret scan, denylist scan |
 
