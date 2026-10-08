@@ -15,7 +15,7 @@ credentials.json
 token.json
 .git-credentials
 
-# Terraform: state holds the shared key's value, and the attendee list holds real people
+# Terraform: state and the attendee list hold real people's emails
 infra/.terraform/
 infra/*.tfstate
 infra/*.tfstate.*

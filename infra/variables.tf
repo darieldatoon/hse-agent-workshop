@@ -19,8 +19,3 @@ variable "add_workspace_members" {
   type        = bool
   default     = false
 }
-
-variable "key_expires_at" {
-  description = "When the shared workshop key stops working, RFC 3339 (e.g. 2026-10-14T23:59:59Z)."
-  type        = string
-}

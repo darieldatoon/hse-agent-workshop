@@ -10,9 +10,3 @@ output "invite_status" {
   description = "Org invite status per attendee: pending until they accept."
   value       = { for email, m in langsmith_org_membership.attendee : email => m.status }
 }
-
-output "workshop_key" {
-  description = "The shared key. Read with `terraform output -raw workshop_key`."
-  value       = langsmith_service_key.workshop.key
-  sensitive   = true
-}

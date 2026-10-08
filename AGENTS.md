@@ -16,7 +16,7 @@ from the local, gitignored `.denylist`.
 |---|---|
 | `notebooks/` | The Colab notebooks. Follow the contract in `CONTRIBUTING.md` |
 | `seed/` | `hse-seed`: generates the v0 agent's traces once, then replays them into every workspace |
-| `infra/` | Terraform: one workspace per attendee, org invites, memberships, the shared key |
+| `infra/` | Terraform: one workspace per attendee, org invites, memberships |
 | `tools/` | Notebook lint, secret scan, denylist scan |
 
 ## Toolchain

@@ -11,7 +11,7 @@ You need:
 
 - A **personal Google account**, to run Colab.
 - Your **LangSmith invite**, accepted. Each participant gets their own workspace.
-- The **workshop key**, from your instructor.
+- A **LangSmith API key** you create in your workspace. [00 · Setup](notebooks/00_setup.ipynb) shows how.
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/darieldatoon/hse-agent-workshop/blob/main/notebooks/00_setup.ipynb)
 **Start here → [00 · Setup](notebooks/00_setup.ipynb)**
@@ -32,7 +32,7 @@ Colab is the intended environment, but the notebooks run the same way locally wi
 git clone https://github.com/darieldatoon/hse-agent-workshop
 cd hse-agent-workshop
 uv sync
-cp .env.example .env    # then paste the workshop key into LANGSMITH_API_KEY
+cp .env.example .env    # then paste your API key into LANGSMITH_API_KEY
 uv run jupyter lab notebooks
 ```
 
@@ -53,11 +53,10 @@ cp .env.example .env    # an org admin key in LANGSMITH_API_KEY
 cp infra/attendees.example.csv infra/attendees.csv          # real attendees; gitignored
 cp infra/terraform.tfvars.example infra/terraform.tfvars    # gitignored
 mise run infra:init
-mise run infra:apply    # workspaces, org invites, the shared key
+mise run infra:apply    # workspaces and org invites
 # once invites are accepted: set add_workspace_members = true, then apply again
-terraform -chdir=infra output -raw workshop_key
 ```
 
-Terraform state holds the shared key's value. It stays local and gitignored.
+Terraform state holds attendee emails. It stays local and gitignored.
 
 **Seeding** (`seed/`): `mise run seed -- generate`, then `mise run seed -- upload`.

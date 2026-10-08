@@ -11,8 +11,7 @@ data "langsmith_workspace_role" "admin" {
   name = "WORKSPACE_ADMIN"
 }
 
-# One workspace per attendee, named so they can pick it out in the workspace switcher and type
-# it into the notebook's WORKSPACE field.
+# One workspace per attendee, named so they can pick it out in the workspace switcher.
 resource "langsmith_workspace" "attendee" {
   for_each     = local.attendees
   display_name = "${trimspace(each.value.first_name)} ${trimspace(each.value.last_name)}"
@@ -37,11 +36,4 @@ resource "langsmith_workspace_membership" "attendee" {
   role_id      = data.langsmith_workspace_role.admin.id
 
   depends_on = [langsmith_org_membership.attendee]
-}
-
-# One org-wide key shared by every attendee. It can reach every workspace, which is why the
-# notebooks refuse to run until the attendee names theirs, and why it expires right after.
-resource "langsmith_service_key" "workshop" {
-  description = "hse workshop shared key"
-  expires_at  = var.key_expires_at
 }

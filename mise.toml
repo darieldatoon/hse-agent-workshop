@@ -36,13 +36,13 @@ dir = "infra"
 run = "terraform init"
 
 [tasks."infra:plan"]
-description = "Plan workspaces, memberships and the shared service key"
+description = "Plan workspaces, org invites and memberships"
 dir = "infra"
 # The provider reads the org admin key from LANGSMITH_API_KEY in ../.env.
 run = "set -a && . ../.env && set +a && terraform plan"
 
 [tasks."infra:apply"]
-description = "Apply workspaces, memberships and the shared service key"
+description = "Apply workspaces, org invites and memberships"
 dir = "infra"
 # The provider reads the org admin key from LANGSMITH_API_KEY in ../.env.
 run = "set -a && . ../.env && set +a && terraform apply"
