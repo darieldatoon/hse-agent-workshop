@@ -1,0 +1,41 @@
+# local scratch: plans, briefs, notes; never committed
+.scratch/
+
+# local denylist read by tools/scan_denylist.sh; never committed
+.denylist
+
+# Secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.crt
+credentials.json
+token.json
+.git-credentials
+
+# Terraform: state holds the shared key's value, and the attendee list holds real people
+infra/.terraform/
+infra/*.tfstate
+infra/*.tfstate.*
+infra/terraform.tfvars
+infra/attendees.csv
+infra/crash.log
+
+# Seeder output: traces captured from the v0 agent before replay
+seed/.cache/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.ruff_cache/
+
+# Notebooks
+.ipynb_checkpoints/
+
+# OS / editor
+.DS_Store
+.vscode/
+.idea/

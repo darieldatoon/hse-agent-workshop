@@ -1,0 +1,17 @@
+[project]
+name = "hse-workshop-seed"
+version = "0.1.0"
+description = "Seeds every attendee workspace with the lab's traces and feedback"
+requires-python = ">=3.12"
+dependencies = [
+    "langchain>=1.4.3",
+    "langchain-openai>=1.6.7",
+    "langsmith>=0.14.4",
+]
+
+[project.scripts]
+hse-seed = "hse_workshop_seed.cli:main"
+
+[build-system]
+requires = ["uv_build>=0.12,<0.13"]
+build-backend = "uv_build"

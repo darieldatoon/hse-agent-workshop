@@ -1,0 +1,58 @@
+[project]
+name = "hse-agent-workshop"
+version = "0.1.0"
+description = "Hands-on Colab lab: find the bugs in an HSE triage agent's traces, then evaluate and fix it with LangSmith"
+requires-python = ">=3.12"
+
+# Intentionally empty. The notebooks install their own pinned dependencies in their setup
+# cell so each one is self-contained in Colab (see CONTRIBUTING.md).
+dependencies = []
+
+[dependency-groups]
+# Everything the notebooks import, plus Jupyter: the local equivalent of what the setup cell
+# installs on Colab. Versions must match the setup cell's pins.
+notebook = [
+    "agentevals~=0.0.9",
+    "jupyterlab>=4.4",
+    "langchain~=1.4.3",
+    "langchain-openai~=1.6.7",
+    "langsmith~=0.14.4",
+    "python-dotenv>=1.1",
+]
+dev = [
+    { include-group = "notebook" },  # ty can only check calls into libraries it sees
+    "nbstripout>=0.9.1",
+    "ruff>=0.16",
+    "ty>=0.0.82",
+]
+
+[tool.uv]
+# A collection of notebooks plus the seeder, not an installable package.
+package = false
+# A bare `uv sync` gives a participant a working kernel without the maintainer toolchain.
+default-groups = ["notebook"]
+
+[tool.uv.workspace]
+members = ["seed"]
+
+[tool.uv.sources]
+hse-workshop-seed = { workspace = true }
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+# Deliberately narrow for notebooks, which participants read as exemplary code: dead and
+# broken code only, not style opinions that fight the teaching narrative.
+select = ["F", "E4", "E7", "E9", "I", "C4"]
+
+[tool.ty.environment]
+python-version = "3.12"
+
+[tool.ty.rules]
+# `from google.colab import userdata` cannot resolve outside Colab.
+unresolved-import = "ignore"
+# Colab form fields are literals the participant edits (`WORKSPACE = ""  #@param`), so a check
+# on one always looks redundant to a static checker.
+redundant-condition = "ignore"

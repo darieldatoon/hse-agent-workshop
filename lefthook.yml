@@ -1,0 +1,42 @@
+# Install once with `mise run setup`. The jobs use `uv run --no-sync`, so they see .venv as it
+# stands; `mise run setup` installs the dev group they need. No test hooks yet (see AGENTS.md).
+pre-commit:
+  parallel: false # strip runs before lint; lint reads what strip produced
+  jobs:
+    # Do not drop --keep-metadata-keys: `cellView: form` is what collapses bulk data cells in
+    # Colab, and losing it silently unfolds them.
+    - name: strip notebook outputs
+      glob: "notebooks/*.ipynb"
+      run: uv run --no-sync nbstripout --keep-metadata-keys cellView {staged_files}
+      stage_fixed: true
+
+    - name: ruff
+      glob: "*.{py,ipynb}"
+      run: uv run --no-sync ruff check {staged_files}
+
+    - name: ruff format
+      glob: "seed/**/*.py"
+      run: uv run --no-sync ruff format --check {staged_files}
+
+    - name: ty
+      glob: "*.{py,ipynb}"
+      run: uv run --no-sync ty check
+
+    - name: lint notebooks
+      glob: "notebooks/*.ipynb"
+      run: python3 tools/check_notebooks.py
+
+    - name: terraform fmt
+      glob: "infra/*.tf"
+      run: terraform fmt -check infra
+
+    - name: scan for secrets
+      run: bash tools/scan_secrets.sh {staged_files}
+
+    - name: scan for denylisted terms
+      run: bash tools/scan_denylist.sh {staged_files}
+
+pre-push:
+  jobs:
+    - name: lint all notebooks
+      run: python3 tools/check_notebooks.py

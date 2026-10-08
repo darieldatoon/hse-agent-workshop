@@ -1,0 +1,48 @@
+# One toolchain file for the whole repo. `mise trust && mise install && mise run setup`.
+# Python comes from uv (.python-version), not mise. Participants need none of this: the
+# notebooks run in Colab. This is for maintainers and the instructor.
+
+[tools]
+uv = "0.12"
+lefthook = "2"
+terraform = "1.11"
+"github:SocketDev/sfw-free" = { version = "1.15.2", bin = "sfw" }
+"github:langchain-ai/langsmith-cli" = { version = "v0.2.60", bin = "langsmith" }
+
+[tasks.setup]
+description = "Install the notebook stack, the seeder and the dev tools, then git hooks"
+run = ["sfw uv sync --all-packages --all-groups", "lefthook install"]
+
+[tasks.lab]
+description = "Open the notebooks in Jupyter Lab, the local alternative to Colab"
+run = "uv run jupyter lab notebooks"
+
+[tasks.check]
+description = "Ruff, ty and the notebook lint"
+run = [
+  "uv run --all-packages ruff format --check seed",
+  "uv run --all-packages ruff check .",
+  "uv run --all-packages ty check",
+  "python3 tools/check_notebooks.py",
+]
+
+[tasks.seed]
+description = "Seed traces and feedback into every attendee workspace (pass options after --)"
+run = "uv run --all-packages --env-file .env hse-seed"
+
+[tasks."infra:init"]
+description = "Install the LangSmith Terraform provider"
+dir = "infra"
+run = "terraform init"
+
+[tasks."infra:plan"]
+description = "Plan workspaces, memberships and the shared service key"
+dir = "infra"
+# The provider reads the org admin key from LANGSMITH_API_KEY in ../.env.
+run = "set -a && . ../.env && set +a && terraform plan"
+
+[tasks."infra:apply"]
+description = "Apply workspaces, memberships and the shared service key"
+dir = "infra"
+# The provider reads the org admin key from LANGSMITH_API_KEY in ../.env.
+run = "set -a && . ../.env && set +a && terraform apply"
