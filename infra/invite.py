@@ -44,20 +44,29 @@ def attendees(outputs: dict[str, Any]) -> list[Attendee]:
     ]
 
 
+@dataclass(frozen=True)
+class Roster:
+    """Who is in a workspace, and who is invited to it."""
+
+    user_ids: frozenset[str]
+    pending_emails: frozenset[str]
+
+
 def plan(
     people: list[Attendee],
     members: dict[str, dict[str, Any]],
-    pending: dict[str, dict[str, Any]],
-    workspace_members: dict[str, set[str]],
+    pending: set[str],
+    rosters: dict[str, Roster],
 ) -> Plan:
+    """`members` and `pending` are the org's; a `rosters` entry is each attendee's workspace."""
     invite, add, done, stuck = [], [], [], []
     for a in people:
+        roster = rosters.get(a.workspace_id, Roster(frozenset(), frozenset()))
         if a.email in pending:
-            ids = pending[a.email].get("workspace_ids") or []
-            (done if a.workspace_id in ids else stuck).append(a)
+            (done if a.email in roster.pending_emails else stuck).append(a)
         elif a.email in members:
             user_id = members[a.email]["user_id"]
-            if user_id in workspace_members.get(a.workspace_id, set()):
+            if user_id in roster.user_ids:
                 done.append(a)
             else:
                 add.append((a, user_id))
@@ -71,6 +80,20 @@ def _terraform_outputs() -> dict[str, Any]:
         ["terraform", "output", "-json"], check=True, capture_output=True, text=True
     ).stdout
     return {name: o["value"] for name, o in json.loads(raw).items()}
+
+
+def _roster(http: requests.Session, workspace_id: str) -> Roster:
+    body = _check(
+        http.get(
+            f"{API}/workspaces/current/members",
+            headers={"X-Tenant-Id": workspace_id},
+            timeout=30,
+        )
+    )
+    return Roster(
+        frozenset(m["user_id"] for m in body["members"]),
+        frozenset(p["email"].lower() for p in body["pending"]),
+    )
 
 
 def _check(response: requests.Response) -> Any:
@@ -98,22 +121,14 @@ def main() -> None:
 
     org = _check(http.get(f"{API}/orgs/current/members", timeout=30))
     members = {m["email"].lower(): m for m in org["members"] if m.get("email")}
-    pending = {p["email"].lower(): p for p in org["pending"]}
-    workspace_members = {
-        a.workspace_id: {
-            m["user_id"]
-            for m in _check(
-                http.get(
-                    f"{API}/workspaces/current/members",
-                    headers={"X-Tenant-Id": a.workspace_id},
-                    timeout=30,
-                )
-            )["members"]
-        }
+    # The org's pending list doesn't say which workspace an invite carries; the workspace's does.
+    pending = {p["email"].lower() for p in org["pending"]}
+    rosters = {
+        a.workspace_id: _roster(http, a.workspace_id)
         for a in people
-        if a.email in members
+        if a.email in members or a.email in pending
     }
-    todo = plan(people, members, pending, workspace_members)
+    todo = plan(people, members, pending, rosters)
 
     for a in todo.done:
         print(f"  done     {a.email} -> {a.workspace_name}")
