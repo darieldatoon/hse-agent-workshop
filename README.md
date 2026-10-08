@@ -21,7 +21,7 @@ You need:
 | | Notebook | What you do |
 |---|---|---|
 | 00 | [Setup](notebooks/00_setup.ipynb) | Check your key, a model call, and that traces land in your workspace |
-| 01 | [Find the bugs, then prove the fix](notebooks/01_find_and_fix.ipynb) | Hunt through traces, build a dataset and evaluators, compare v0 with v1 |
+| 01 | [Build the triage agent](notebooks/01_build_agent.ipynb) | Build the agent with `create_agent`, run it, read its traces |
 
 ## Running locally
 
