@@ -56,3 +56,14 @@ unresolved-import = "ignore"
 # Colab form fields are literals the participant edits (`WORKSPACE = ""  #@param`), so a check
 # on one always looks redundant to a static checker.
 redundant-condition = "ignore"
+
+[[tool.ty.overrides]]
+# Library annotations are narrower than what the libraries accept at runtime: evaluators may
+# return a bare bool, and `with_structured_output` is typed `dict | BaseModel`. Notebooks are
+# teaching code, so they stay free of casts; executing them end to end is the real check.
+include = ["notebooks/**"]
+
+[tool.ty.overrides.rules]
+invalid-argument-type = "ignore"
+no-matching-overload = "ignore"
+unresolved-attribute = "ignore"

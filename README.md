@@ -22,6 +22,8 @@ You need:
 |---|---|---|
 | 00 | [Setup](notebooks/00_setup.ipynb) | Check your key, a model call, and that traces land in your workspace |
 | 01 | [Build the triage agent](notebooks/01_build_agent.ipynb) | Build the agent with `create_agent`, run it, read its traces |
+| 02 | [The hunt](notebooks/02_hunt.ipynb) | Read a week of production traces in LangSmith and flag what's wrong |
+| 03 | [Evaluate and fix](notebooks/03_evaluate_and_fix.ipynb) | Turn flagged traces into a dataset and evaluators, then compare v0 with v1 |
 
 ## Running locally
 
