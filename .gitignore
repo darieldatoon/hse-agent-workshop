@@ -39,3 +39,6 @@ __pycache__/
 .DS_Store
 .vscode/
 .idea/
+
+# Local Agent Server state, written by Studio runs
+.langgraph_api/
